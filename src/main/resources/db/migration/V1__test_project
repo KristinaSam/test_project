@@ -1,0 +1,45 @@
+CREATE SCHEMA `test_project`;
+
+CREATE TABLE `test_project`.`company_user` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `login` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `login_UNIQUE` (`login` ASC) VISIBLE);
+
+CREATE TABLE `test_project`.`patient_profile` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `first_name` VARCHAR(255) NOT NULL,
+  `last_name` VARCHAR(255) NOT NULL,
+  `old_client_guid` VARCHAR(255) NOT NULL,
+  `status_id` SMALLINT NOT NULL,
+  PRIMARY KEY (`id`));
+
+CREATE TABLE `test_project`.`patient_note` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `created_date_time` TIMESTAMP NOT NULL,
+  `last_modified_date_time` TIMESTAMP NOT NULL,
+  `created_by_user_id` BIGINT NULL,
+  `last_modified_by_user_id` BIGINT NULL,
+  `note` VARCHAR(4000) NULL,
+  `patient_id` BIGINT NOT NULL,
+
+  PRIMARY KEY (`id`),
+  INDEX `last_modified_by_user_id_idx` (`last_modified_by_user_id` ASC) VISIBLE,
+  INDEX `created_by_user_id_idx` (`created_by_user_id` ASC) VISIBLE,
+  INDEX `patient_id_idx` (`patient_id` ASC) VISIBLE,
+  UNIQUE INDEX `external_guid_UNIQUE` (`external_guid` ASC) VISIBLE,
+  CONSTRAINT `last_modified_by_user_id`
+    FOREIGN KEY (`last_modified_by_user_id`)
+    REFERENCES `test_project`.`company_user` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `created_by_user_id`
+    FOREIGN KEY (`created_by_user_id`)
+    REFERENCES `test_project`.`company_user` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `patient_id`
+    FOREIGN KEY (`patient_id`)
+    REFERENCES `test_project`.`patient_profile` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE);
